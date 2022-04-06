@@ -1,6 +1,6 @@
 DocsDirectory: docs/
 TargetProfile: githubwiki
-ProjectName: 507s
+ProjectName: openscad_logging
 IgnoreFiles:
   tmp_*.scad
 DefineHeader(BulletList): Todo
