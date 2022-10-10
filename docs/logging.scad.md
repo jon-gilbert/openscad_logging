@@ -6,6 +6,10 @@ To use, add the following lines to the beginning of your file:
 
     include <logging.scad>
 
+
+Additionally, you **must** set the `LOG_LEVEL` variable somewhere within your model file. See the `LOG_LEVEL` definition in
+the "Logging Level Constants" section, below.
+
 ## Table of Contents
 
 1. [Section: Logging Level Constants](#section-logging-level-constants)
@@ -19,11 +23,17 @@ To use, add the following lines to the beginning of your file:
 
 2. [Section: Logging Functions](#section-logging-functions)
     - [`log_debug()`](#functionmodule-log_debug)
+    - [`log_debug_if()`](#functionmodule-log_debug_if)
     - [`log_info()`](#functionmodule-log_info)
+    - [`log_info_if()`](#functionmodule-log_info_if)
     - [`log_warning()`](#functionmodule-log_warning)
+    - [`log_warning_if()`](#functionmodule-log_warning_if)
     - [`log_error()`](#functionmodule-log_error)
+    - [`log_error_if()`](#functionmodule-log_error_if)
     - [`log_fatal()`](#functionmodule-log_fatal)
+    - [`log_fatal_if()`](#functionmodule-log_fatal_if)
     - [`logger()`](#functionmodule-logger)
+    - [`logger_if()`](#functionmodule-logger_if)
     - [`format_log()`](#function-format_log)
     - [`log_match()`](#function-log_match)
 
@@ -163,7 +173,7 @@ if the global `LOG_LEVEL` is at or lower than `LOG_DEBUG`.
 
 When invoked as a module, `log_debug()` produces no model or element for drawing.
 
-When invoked as a function, `log_debug()` returns undef.
+When invoked as a function, `log_debug()` returns `msg` if it should have emitted to the console, or undef.
 
 **Arguments:** 
 
@@ -207,6 +217,82 @@ When invoked as a function, `log_debug()` returns undef.
 
 ---
 
+### Function/Module: log\_debug\_if()
+
+**Usage:** as a module
+
+- log\_debug\_if(test, msg);
+
+**Usage:** as a function:
+
+- bool = log\_debug\_if(test, msg);
+
+**Description:** 
+
+Given an evaluatable boolean test, and a log message as either a single string or list, emit a
+log message prefixed with "DEBUG" if the `test` evaluates to `true` and if the global
+`LOG_LEVEL` is at or lower than `LOG_DEBUG`.
+
+When invoked as a module, `log_debug_if()` produces no model or element for drawing.
+
+When invoked as a function, `log_debug_if()` returns the evaluated value of `test`.
+
+**Arguments:** 
+
+<abbr title="These args can be used by position or by name.">By&nbsp;Position</abbr> | What it does
+-------------------- | ------------
+`test`               | An evaluatable express, or a flat boolean expression. No default.
+`msg`                | The message to emit. `msg` can be either a literal string, or a list of elements.
+
+**Example 1:** when invoked as a module
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_DEBUG;
+    log_debug_if(true, "log message");
+    // emits to the console:  ECHO: "DEBUG: log message"
+
+<br clear="all" /><br/>
+
+**Example 2:** when invoked as a module
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_DEBUG;
+    log_debug_if(1 > 0, ["message with additional info:", 1]);
+    // emits to the console:  ECHO: "DEBUG: message with additional info: 1"
+
+<br clear="all" /><br/>
+
+**Example 3:** when invoked as a module and `test` does not evaluate to true:
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_DEBUG;
+    log_debug_if(0 > 1, ["message with additional info:", 1]);
+    // nothing is emitted to the console
+
+<br clear="all" /><br/>
+
+**Example 4:** when invoked as a function
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_DEBUG;
+    v = log_debug_if(1 > 0, "log message");
+    // emits to the console: ECHO: "DEBUG: log message"
+    // v == true
+
+<br clear="all" /><br/>
+
+**Example 5:** when invoked as a function and `test` does not evaluate to true:
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_DEBUG;
+    v = log_debug_if(0 > 1, "log message");
+    // nothing is emitted to the console
+    // v == false
+
+<br clear="all" /><br/>
+
+---
+
 ### Function/Module: log\_info()
 
 **Usage:** as a module
@@ -224,7 +310,7 @@ if the global `LOG_LEVEL` is at or lower than `LOG_INFO`.
 
 When invoked as a module, `log_info()` produces no model or element for drawing.
 
-When invoked as a function, `log_info()` returns undef.
+When invoked as a function, `log_info()` returns `msg` if it should have emitted to the console, or undef.
 
 **Arguments:** 
 
@@ -268,6 +354,82 @@ When invoked as a function, `log_info()` returns undef.
 
 ---
 
+### Function/Module: log\_info\_if()
+
+**Usage:** as a module
+
+- log\_info\_if(test, msg);
+
+**Usage:** as a function:
+
+- bool = log\_info\_if(test, msg);
+
+**Description:** 
+
+Given an evaluatable boolean test, and a log message as either a single string or list, emit a
+log message prefixed with "INFO" if the `test` evaluates to `true` and if the global
+`LOG_LEVEL` is at or lower than `LOG_INFO`.
+
+When invoked as a module, `log_info_if()` produces no model or element for drawing.
+
+When invoked as a function, `log_info_if()` returns the evaluated value of `test`.
+
+**Arguments:** 
+
+<abbr title="These args can be used by position or by name.">By&nbsp;Position</abbr> | What it does
+-------------------- | ------------
+`test`               | An evaluatable express, or a flat boolean expression. No default.
+`msg`                | The message to emit. `msg` can be either a literal string, or a list of elements.
+
+**Example 1:** when invoked as a module
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_INFO;
+    log_info_if(true, "log message");
+    // emits to the console:  ECHO: "INFO: log message"
+
+<br clear="all" /><br/>
+
+**Example 2:** when invoked as a module
+
+    include <logging.scad>
+    LOG_LEVEL = INFO;
+    log_info_if(1 > 0, ["message with additional info:", 1]);
+    // emits to the console:  ECHO: "INFO: message with additional info: 1"
+
+<br clear="all" /><br/>
+
+**Example 3:** when invoked as a module and `test` does not evaluate to true:
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_DEBUG;
+    log_info_if(0 > 1, ["message with additional info:", 1]);
+    // nothing is emitted to the console
+
+<br clear="all" /><br/>
+
+**Example 4:** when invoked as a function
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_DEBUG;
+    v = log_info_if(1 > 0, "log message");
+    // emits to the console: ECHO: "INFO: log message"
+    // v == true
+
+<br clear="all" /><br/>
+
+**Example 5:** when invoked as a function and `test` does not evaluate to true:
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_DEBUG;
+    v = log_info_if(0 > 1, "log message");
+    // nothing is emitted to the console
+    // v == false
+
+<br clear="all" /><br/>
+
+---
+
 ### Function/Module: log\_warning()
 
 **Usage:** as a module
@@ -285,7 +447,7 @@ if the global `LOG_LEVEL` is at or lower than `LOG_WARNING`.
 
 When invoked as a module, `log_warning()` produces no model or element for drawing.
 
-When invoked as a function, `log_warning()` returns undef.
+When invoked as a function, `log_warning()` returns `msg` if it should have emitted to the console, or undef.
 
 **Arguments:** 
 
@@ -329,6 +491,82 @@ When invoked as a function, `log_warning()` returns undef.
 
 ---
 
+### Function/Module: log\_warning\_if()
+
+**Usage:** as a module
+
+- log\_warning\_if(test, msg);
+
+**Usage:** as a function:
+
+- bool = log\_warning\_if(test, msg);
+
+**Description:** 
+
+Given an evaluatable boolean test, and a log message as either a single string or list, emit a
+log message prefixed with "WARNING" if the `test` evaluates to `true` and if the global
+`LOG_LEVEL` is at or lower than `LOG_WARNING`.
+
+When invoked as a module, `log_warning_if()` produces no model or element for drawing.
+
+When invoked as a function, `log_warning_if()` returns the evaluated value of `test`.
+
+**Arguments:** 
+
+<abbr title="These args can be used by position or by name.">By&nbsp;Position</abbr> | What it does
+-------------------- | ------------
+`test`               | An evaluatable express, or a flat boolean expression. No default.
+`msg`                | The message to emit. `msg` can be either a literal string, or a list of elements.
+
+**Example 1:** when invoked as a module
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_WARNING;
+    log_warning_if(true, "log message");
+    // emits to the console:  ECHO: "WARNING: log message"
+
+<br clear="all" /><br/>
+
+**Example 2:** when invoked as a module
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_WARNING;
+    log_warning_if(1 > 0, ["message with additional info:", 1]);
+    // emits to the console:  ECHO: "WARNING: message with additional info: 1"
+
+<br clear="all" /><br/>
+
+**Example 3:** when invoked as a module and `test` does not evaluate to true:
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_WARNING;
+    log_warning_if(0 > 1, ["message with additional info:", 1]);
+    // nothing is emitted to the console
+
+<br clear="all" /><br/>
+
+**Example 4:** when invoked as a function
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_WARNING;
+    v = log_warning_if(1 > 0, "log message");
+    // emits to the console: ECHO: "WARNING: log message"
+    // v == true
+
+<br clear="all" /><br/>
+
+**Example 5:** when invoked as a function and `test` does not evaluate to true:
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_WARNING;
+    v = log_warning_if(0 > 1, "log message");
+    // nothing is emitted to the console
+    // v == false
+
+<br clear="all" /><br/>
+
+---
+
 ### Function/Module: log\_error()
 
 **Usage:** as a module
@@ -346,7 +584,7 @@ if the global `LOG_LEVEL` is at or lower than `LOG_ERROR`.
 
 When invoked as a module, `log_error()` produces no model or element for drawing.
 
-When invoked as a function, `log_error()` returns undef.
+When invoked as a function, `log_error()` returns `msg` if it should have emitted to the console, or undef.
 
 **Arguments:** 
 
@@ -390,6 +628,82 @@ When invoked as a function, `log_error()` returns undef.
 
 ---
 
+### Function/Module: log\_error\_if()
+
+**Usage:** as a module
+
+- log\_error\_if(test, msg);
+
+**Usage:** as a function:
+
+- bool = log\_error\_if(test, msg);
+
+**Description:** 
+
+Given an evaluatable boolean test, and a log message as either a single string or list, emit a
+log message prefixed with "ERROR" if the `test` evaluates to `true` and if the global
+`LOG_LEVEL` is at or lower than `LOG_ERROR`.
+
+When invoked as a module, `log_error_if()` produces no model or element for drawing.
+
+When invoked as a function, `log_error_if()` returns the evaluated value of `test`.
+
+**Arguments:** 
+
+<abbr title="These args can be used by position or by name.">By&nbsp;Position</abbr> | What it does
+-------------------- | ------------
+`test`               | An evaluatable express, or a flat boolean expression. No default.
+`msg`                | The message to emit. `msg` can be either a literal string, or a list of elements.
+
+**Example 1:** when invoked as a module
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_ERROR;
+    log_error_if(true, "log message");
+    // emits to the console:  ECHO: "ERROR: log message"
+
+<br clear="all" /><br/>
+
+**Example 2:** when invoked as a module
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_ERROR;
+    log_error_if(1 > 0, ["message with additional info:", 1]);
+    // emits to the console:  ECHO: "ERROR: message with additional info: 1"
+
+<br clear="all" /><br/>
+
+**Example 3:** when invoked as a module and `test` does not evaluate to true:
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_ERROR;
+    log_error_if(0 > 1, ["message with additional info:", 1]);
+    // nothing is emitted to the console
+
+<br clear="all" /><br/>
+
+**Example 4:** when invoked as a function
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_ERROR;
+    v = log_error_if(1 > 0, "log message");
+    // emits to the console: ECHO: "ERROR: log message"
+    // v == true
+
+<br clear="all" /><br/>
+
+**Example 5:** when invoked as a function and `test` does not evaluate to true:
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_ERROR;
+    v = log_error_if(0 > 1, "log message");
+    // nothing is emitted to the console
+    // v == false
+
+<br clear="all" /><br/>
+
+---
+
 ### Function/Module: log\_fatal()
 
 **Usage:** as a module
@@ -406,9 +720,9 @@ Given a log message as either a single string or list, call `assert()` on a `fal
 emit a log message prefixed with "FATAL". `log_fatal()` is invokable regardless of the
 global `LOG_LEVEL` setting.
 
-When invoked as a module, `log_fatal()` halts execution of the .scad file..
+When invoked as a module, `log_fatal()` halts execution of the .scad file.
 
-When invoked as a function, `log_fatal()` halts execution of the .scad file..
+When invoked as a function, `log_fatal()` halts execution of the .scad file.
 
 **Arguments:** 
 
@@ -452,6 +766,82 @@ When invoked as a function, `log_fatal()` halts execution of the .scad file..
 
 ---
 
+### Function/Module: log\_fatal\_if()
+
+**Usage:** as a module
+
+- log\_fatal\_if(test, msg);
+
+**Usage:** as a function:
+
+- bool = log\_fatal\_if(test, msg);
+
+**Description:** 
+
+Given an evaluatable boolean test, and a log message as either a single string or list, emit a
+log message prefixed with "FATAL" if the `test` evaluates to `true` and if the global
+`LOG_LEVEL` is at or lower than `LOG_FATAL`.
+
+When invoked as a module, `log_fatal_if()` halts execution of the .scad file.
+
+When invoked as a function, `log_fatal_if()` halts execution of the .scad file.
+
+**Arguments:** 
+
+<abbr title="These args can be used by position or by name.">By&nbsp;Position</abbr> | What it does
+-------------------- | ------------
+`test`               | An evaluatable express, or a flat boolean expression. No default.
+`msg`                | The message to emit. `msg` can be either a literal string, or a list of elements.
+
+**Example 1:** when invoked as a module
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_FATAL;
+    log_fatal_if(true, "log message");
+    // emits to the console:  ERROR: Assertion 'false' failed: "FATAL: log message" in file ..., line ...
+
+<br clear="all" /><br/>
+
+**Example 2:** when invoked as a module
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_FATAL;
+    log_fatal_if(1 > 0, ["message with additional info:", 1]);
+    // emits to the console:  ERROR: Assertion 'false' failed: "FATAL: message with additional info: 1" in file ..., line ...
+
+<br clear="all" /><br/>
+
+**Example 3:** when invoked as a module and `test` does not evaluate to true:
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_FATAL;
+    log_fatal_if(0 > 1, ["message with additional info:", 1]);
+    // nothing is emitted to the console, execution of the .scad file is *not* halted.
+
+<br clear="all" /><br/>
+
+**Example 4:** when invoked as a function
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_FATAL;
+    v = log_fatal_if(1 > 0, "log message");
+    // emits to the console:  ERROR: Assertion 'false' failed: "FATAL: log message" in file ..., line ...
+    // v is not evaluatable, because execution will have been halted
+
+<br clear="all" /><br/>
+
+**Example 5:** when invoked as a function and `test` does not evaluate to true:
+
+    include <logging.scad>
+    LOG_LEVEL = LOG_FATAL;
+    v = log_fatal_if(0 > 1, "log message");
+    // nothing is emitted to the console
+    // v == false
+
+<br clear="all" /><br/>
+
+---
+
 ### Function/Module: logger()
 
 **Usage:** as a module
@@ -470,12 +860,41 @@ level's prefix from `LOG_NAMES` if the `msg_level` is at or lower than `LOG_LEVE
 
 When invoked as a module, `logger()` produces no model or element for drawing.
 
-When invoked as a function, `logger()` returns undef.
+When invoked as a function, `logger()` returns `msg` if it should have emitted to the console, or undef.
 
 **Arguments:** 
 
 <abbr title="These args can be used by position or by name.">By&nbsp;Position</abbr> | What it does
 -------------------- | ------------
+`msg`                | The message to emit. `msg` can be either a literal string, or a list of elements.
+`msg_level`          | The logging level *of the message*.
+
+---
+
+### Function/Module: logger\_if()
+
+**Usage:** as a module
+
+- logger\_if(test, msg, msg\_level);
+
+**Usage:** as a function
+
+- result = logger\_if(test, msg, msg\_level);
+
+**Description:** 
+
+x.
+
+When invoked as a module, `logger_if()` produces no model or element for drawing.
+
+When invoked as a function, `logger_if()` returns the evaluated value of `test`.
+*This is not the same behavior as `logger()`.*
+
+**Arguments:** 
+
+<abbr title="These args can be used by position or by name.">By&nbsp;Position</abbr> | What it does
+-------------------- | ------------
+`test`               | A boolean result from an evaluation test.
 `msg`                | The message to emit. `msg` can be either a literal string, or a list of elements.
 `msg_level`          | The logging level *of the message*.
 

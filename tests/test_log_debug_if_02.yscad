@@ -1,0 +1,13 @@
+# as a function: based on a test, ensure that 'log-message' appears in output;
+# and, that the return of log_debug_if() matches the expected result
+MATCH_TEXT="log-message"
+
+# NOMATCH_TEXT="ERROR"
+
+SCAD=`cat <<EOM
+    include <logging.scad>
+    LOG_LEVEL=LOG_DEBUG;
+    r = log_debug_if(1 > 0, "log-message");
+    assert( r == true, "return value from log_debug_if() is true" );
+EOM
+`
