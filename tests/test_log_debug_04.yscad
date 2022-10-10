@@ -1,0 +1,9 @@
+# as a function, restricted by LOG_LEVEL, ensure that 'log-message' does NOT appear in output
+NOMATCH_TEXT="log-message"
+
+SCAD=`cat <<EOM
+    include <logging.scad>
+    LOG_LEVEL=LOG_INFO;
+    m = log_debug("log-message");
+EOM
+`

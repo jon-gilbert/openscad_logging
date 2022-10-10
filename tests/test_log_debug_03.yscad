@@ -1,0 +1,9 @@
+# as a function, ensure that 'log-message' appears in output
+MATCH_TEXT="log-message"
+
+SCAD=`cat <<EOM
+    include <logging.scad>
+    LOG_LEVEL=LOG_DEBUG;
+    m = log_debug("log-message");
+EOM
+`
