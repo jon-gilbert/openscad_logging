@@ -6,7 +6,7 @@ test_names = $(sort $(wildcard $(testdir)/test_*.scad))
 m_test_names = $(sort $(wildcard $(testdir)/test_*.yscad))
 srcs = logging.scad
 
-all: test
+all: test doc
 
 doc:
 	openscad-docsgen --force --gen-files --project-name "openscad_logging" --docs-dir $(docsdir) $(srcs)
