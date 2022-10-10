@@ -1,5 +1,5 @@
 
-include <507/common/logging.scad>
+include <logging.scad>
 
 
 // NOTE: we set this here in this test file to silence 
