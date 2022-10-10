@@ -1,0 +1,12 @@
+
+MATCH_TEXT="failed"
+
+SCAD=`cat <<EOM
+
+assert(false, "this should throw");
+
+EOM
+`
+
+
+

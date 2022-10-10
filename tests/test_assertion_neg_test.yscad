@@ -1,0 +1,9 @@
+NOMATCH_TEXT="garbage"
+
+SCAD=`cat <<EOM
+
+assert(true, "this should pass");
+
+EOM
+`
+

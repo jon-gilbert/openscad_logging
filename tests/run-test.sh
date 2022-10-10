@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo -n "$1: ";
+echo -n "$1: "
 
 #openscad -o - --export-format echo --hardwarnings --check-parameters true --check-parameter-ranges false "$1" 2>&1 | sed -ze 's/\s*$//' > testrun_out.txt
 # run whatever openscad is set to, specifying an 'echo' format and dumping the output of the script and anything sent to 
@@ -18,17 +18,43 @@ _es=$?
 # default this invocation of run-test.sh to failure 
 stat=1
 
+# default the match text flag to no-issue:
+matchtextsuccess=0
+
+if [ -n "${OPENSCAD_NOMATCH_TEXT}" -o -n "${OPENSCAD_MATCH_TEXT}" ]; then
+    if [ -n "${OPENSCAD_NOMATCH_TEXT}" ]; then
+        grep -q ${OPENSCAD_NOMATCH_TEXT} testrun_out.txt
+        if [ $? -eq 0 ]; then
+            echo ">> NOMATCH text '${OPENSCAD_NOMATCH_TEXT}' found in output"
+            matchtextsuccess=1
+        fi
+    fi
+
+    if [ -n "${OPENSCAD_MATCH_TEXT}" ]; then
+        grep -q ${OPENSCAD_MATCH_TEXT} testrun_out.txt
+        if [ $? -ne 0 ]; then
+            echo ">> MATCH text '${OPENSCAD_MATCH_TEXT}' not found in output"
+            matchtextsuccess=1
+        fi
+    fi
+else
+    if [ -s testrun_out.txt ]; then
+        matchtextsuccess=1
+    fi
+fi
+    
 # now check the output: if openscad exited non-zero, or if 
 # there's any output from the test run, consider that a failure.
 # otherwise, assume success. 
-if [ ${_es} -ne 0 -o -s testrun_out.txt ]; then
-    echo " FAIL: ";
-    echo ">> exit status: ${_es}";
-    cat testrun_out.txt;
+if [ ${_es} -ne 0 -o ${matchtextsuccess} -ne 0 ]; then
+    echo " FAIL: "
+    echo ">> exit status: ${_es}"
+    cat testrun_out.txt
 else 
-    echo " OK";
+    echo " OK"
     stat=0
 fi
 
 rm testrun_out.txt
 exit ${stat}
+
