@@ -5,7 +5,7 @@
 // Includes:
 //   include <logging.scad>
 // Continues:
-//   Additionally, you **must** set the `LOG_LEVEL` variable somewhere within your model file. See the `LOG_LEVEL` definition in 
+//   ...and then, set a `LOG_LEVEL` variable somewhere within your model file. See the `LOG_LEVEL` definition in 
 //   the "Logging Level Constants" section, below.
 
 
@@ -94,6 +94,14 @@ LOG_NAMES = [undef, "DEBUG", "INFO", "WARNING", "ERROR", "FATAL"];
 
 
 // Section: Logging Functions 
+//   In general, there are a common collection of logging functions and modules for each log level specified in `LOG_NAMES`, 
+//   all doing approximately the same thing. Each function and module has a more detailed write-up in this section
+//   below, but at a high level each logging level (WARNING, ERROR, et al) has one the following:
+//   .
+//   * a basic logging method and function (eg, `log_debug()`)
+//   * a conditional "log this message if the test is true" method and function (eg, `log_info_if()`)
+//   * a conditional "log this message *unless* the test is true" method and function (eg, `log_warning_unless()`)
+//   * an assignment logging function, that logs and assigns in one step (eg, `log_error_assign()`)
 // 
 // Function&Module: log_debug()
 // Usage: as a module
@@ -122,8 +130,6 @@ LOG_NAMES = [undef, "DEBUG", "INFO", "WARNING", "ERROR", "FATAL"];
 //   function myfunc(v) = let( _ = log_debug("log message") ) v + 1;
 //   new_v = myfunc(1);
 //   // emits to the console:  ECHO: "DEBUG: log message"
-// Todo:
-//   There's *gotta* be a way to call functions within functions that don't return anything not be a syntax error. 
 // See Also: LOG_LEVEL, log_debug(), log_info(), log_warning(), log_error(), log_fatal()
 function log_debug(msg) = logger(msg, LOG_DEBUG);
 module   log_debug(msg) { logger(msg, LOG_DEBUG); }
@@ -139,11 +145,11 @@ module   log_debug(msg) { logger(msg, LOG_DEBUG); }
 //   log message prefixed with "DEBUG" if the `test` evaluates to `true` and if the global 
 //   `LOG_LEVEL` is at or lower than `LOG_DEBUG`. 
 //   .
-//   When invoked as a module, `log_debug_if()` produces no model or element for drawing. 
+//   When invoked as a module, `log_debug_if()` does not produce a model or element for drawing. 
 //   .
 //   When invoked as a function, `log_debug_if()` returns the evaluated value of `test`. 
 // Arguments:
-//   test = An evaluatable express, or a flat boolean expression. No default. 
+//   test = An evaluatable expression, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_DEBUG;
@@ -169,6 +175,80 @@ module   log_debug(msg) { logger(msg, LOG_DEBUG); }
 //   // v == false
 function log_debug_if(test, msg) = logger_if(test, msg, LOG_DEBUG);
 module   log_debug_if(test, msg) { logger_if(test, msg, LOG_DEBUG); }
+
+
+// Function&Module: log_debug_unless()
+// Usage: as a module
+//   log_debug_unless(test, msg);
+// Usage: as a function:
+//   bool = log_debug_unless(test, msg);
+// Description:
+//   Given an evaluatable boolean test, and a log message as either a single string or list, emit a 
+//   log message prefixed with "DEBUG" if the `test` does not evaluate to `true` and if the global 
+//   `LOG_LEVEL` is at or lower than `LOG_DEBUG`. 
+//   .
+//   When invoked as a module, `log_debug_unless()` does not produce a model or element for drawing. 
+//   .
+//   When invoked as a function, `log_debug_unless()` returns the evaluated value of `test`. 
+// Arguments:
+//   test = An evaluatable expression, or a flat boolean expression. No default. 
+//   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+// Example(NORENDER): when invoked as a module
+//   LOG_LEVEL = LOG_DEBUG;
+//   log_debug_unless(false, "log message");
+//   // emits to the console:  ECHO: "DEBUG: log message"
+// Example(NORENDER): when invoked as a module 
+//   LOG_LEVEL = LOG_DEBUG;
+//   log_debug_unless(1 < 0, ["message with additional info:", 1]);
+//   // emits to the console:  ECHO: "DEBUG: message with additional info: 1"
+// Example(NORENDER): when invoked as a module and `test` does not evaluate to false:
+//   LOG_LEVEL = LOG_DEBUG;
+//   log_debug_unless(0 < 1, ["message with additional info:", 1]);
+//   // nothing is emitted to the console
+// Example(NORENDER): when invoked as a function
+//   LOG_LEVEL = LOG_DEBUG;
+//   v = log_debug_unless(1 < 0, "log message");
+//   // emits to the console: ECHO: "DEBUG: log message"
+//   // v == false
+// Example(NORENDER): when invoked as a function and `test` does not evaluate to false:
+//   LOG_LEVEL = LOG_DEBUG;
+//   v = log_debug_unless(0 < 1, "log message");
+//   // nothing is emitted to the console
+//   // v == true
+function log_debug_unless(test, msg) = logger_unless(test, msg, LOG_DEBUG);
+module   log_debug_unless(test, msg) { logger_unless(test, msg, LOG_DEBUG); }
+
+
+// Function: log_debug_assign()
+// Usage:
+//   val = log_debug_assign(val);
+//   val = log_debug_assign(val, <msg>);
+// Description:
+//   Given a value, `log_debug_assign()` will log that the value `val` is being 
+//   assigned, and then will return the value `val`. If an optional log message 
+//   `msg` is specified, that message will be log instead. 
+//   .
+//   The log message is emitted according to the logging level as is normally done 
+//   via `logger()`: if `LOG_LEVEL` isn't set to at least `LOG_DEBUG`, the message 
+//   will not be emitted. 
+//   .
+//   The given value `val` is returned regardless of whether a log message was emitted.
+// Arguments:
+//   val = An arbitrary value.
+//   msg = The message to emit. `msg` can be either a literal string, or a list of elements. If unspecified, a placeholder message will be used.
+// Continues:
+//   There is no corresponding `log_debug_assign()` module. 
+// Example(NORENDER): logging assignment information at a "debug" level: the variable `x` is assigned the value of `1`, and there is a log message saying this was done.
+//   LOG_LEVEL=LOG_DEBUG;
+//   x = log_debug_assign(1, "assigning 1 to x");
+//   // emits to the console: ECHO: "DEBUG: assigning 1 to x"
+//   // x == 1
+// Example(NORENDER): logging at an "info" level: the variable `x` is assigned the value of `1`, but because `LOG_LEVEL` is set higher than "debug", no message is emitted to the console log. 
+//   LOG_LEVEL=LOG_INFO;
+//   x = log_debug_assign(1, "assigning 1 to x");
+//   // nothing is emitted to the console
+//   // x == 1
+function log_debug_assign(val, msg) = logger_assign(val, msg, LOG_DEBUG);
 
 
 // Function&Module: log_info()
@@ -198,8 +278,6 @@ module   log_debug_if(test, msg) { logger_if(test, msg, LOG_DEBUG); }
 //   function myfunc(v) = let( _ = log_info("log message") ) v + 1;
 //   new_v = myfunc(1);
 //   // emits to the console:  ECHO: "INFO: log message"
-// Todo:
-//   There's *gotta* be a way to call functions within functions that don't return anything not be a syntax error. 
 // See Also: LOG_LEVEL, log_debug(), log_info(), log_warning(), log_error(), log_fatal()
 function log_info(msg) = logger(msg, LOG_INFO);
 module   log_info(msg) { logger(msg, LOG_INFO); }
@@ -215,11 +293,11 @@ module   log_info(msg) { logger(msg, LOG_INFO); }
 //   log message prefixed with "INFO" if the `test` evaluates to `true` and if the global 
 //   `LOG_LEVEL` is at or lower than `LOG_INFO`. 
 //   .
-//   When invoked as a module, `log_info_if()` produces no model or element for drawing. 
+//   When invoked as a module, `log_info_if()` does not produce no model or element for drawing. 
 //   .
 //   When invoked as a function, `log_info_if()` returns the evaluated value of `test`. 
 // Arguments:
-//   test = An evaluatable express, or a flat boolean expression. No default. 
+//   test = An evaluatable expression, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_INFO;
@@ -245,6 +323,80 @@ module   log_info(msg) { logger(msg, LOG_INFO); }
 //   // v == false
 function log_info_if(test, msg) = logger_if(test, msg, LOG_INFO);
 module   log_info_if(test, msg) { logger_if(test, msg, LOG_INFO); }
+
+
+// Function&Module: log_info_unless()
+// Usage: as a module
+//   log_info_unless(test, msg);
+// Usage: as a function:
+//   bool = log_info_unless(test, msg);
+// Description:
+//   Given an evaluatable boolean test, and a log message as either a single string or list, emit a 
+//   log message prefixed with "INFO" if the `test` does not evaluate to `true` and if the global 
+//   `LOG_LEVEL` is at or lower than `LOG_INFO`. 
+//   .
+//   When invoked as a module, `log_info_unless()` does not produce a model or element for drawing. 
+//   .
+//   When invoked as a function, `log_info_unless()` returns the evaluated value of `test`. 
+// Arguments:
+//   test = An evaluatable express, or a flat boolean expression. No default. 
+//   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+// Example(NORENDER): when invoked as a module
+//   LOG_LEVEL = LOG_INFO;
+//   log_info_unless(false, "log message");
+//   // emits to the console:  ECHO: "INFO: log message"
+// Example(NORENDER): when invoked as a module 
+//   LOG_LEVEL = INFO;
+//   log_info_unless(1 < 0, ["message with additional info:", 1]);
+//   // emits to the console:  ECHO: "INFO: message with additional info: 1"
+// Example(NORENDER): when invoked as a module and `test` does not evaluate to false
+//   LOG_LEVEL = LOG_DEBUG;
+//   log_info_unless(0 < 1, ["message with additional info:", 1]);
+//   // nothing is emitted to the console
+// Example(NORENDER): when invoked as a function
+//   LOG_LEVEL = LOG_DEBUG;
+//   v = log_info_unless(1 < 0, "log message");
+//   // emits to the console: ECHO: "INFO: log message"
+//   // v == false
+// Example(NORENDER): when invoked as a function and `test` does not evaluate to false
+//   LOG_LEVEL = LOG_DEBUG;
+//   v = log_info_unless(0 < 1, "log message");
+//   // nothing is emitted to the console
+//   // v == true
+function log_info_unless(test, msg) = logger_unless(test, msg, LOG_INFO);
+module   log_info_unless(test, msg) { logger_unless(test, msg, LOG_INFO); }
+
+
+// Function: log_info_assign()
+// Usage:
+//   val = log_info_assign(val);
+//   val = log_info_assign(val, <msg>);
+// Description:
+//   Given a value, `log_info_assign()` will log that the value `val` is being 
+//   assigned, and then will return the value `val`. If an optional log message 
+//   `msg` is specified, that message will be log instead. 
+//   .
+//   The log message is emitted according to the logging level as is normally done 
+//   via `logger()`: if `LOG_LEVEL` isn't set to at least `LOG_INFO`, the message 
+//   will not be emitted. 
+//   .
+//   The given value `val` is returned regardless of whether a log message was emitted.
+// Arguments:
+//   val = An arbitrary value.
+//   msg = The message to emit. `msg` can be either a literal string, or a list of elements. If unspecified, a placeholder message will be used.
+// Continues:
+//   There is no corresponding `log_info_assign()` module. 
+// Example(NORENDER): logging assignment information at a "info" level: the variable `x` is assigned the value of `1`, and there is a log message saying this was done.
+//   LOG_LEVEL=LOG_INFO;
+//   x = log_info_assign(1, "assigning 1 to x");
+//   // emits to the console: ECHO: "INFO: assigning 1 to x"
+//   // x == 1
+// Example(NORENDER): logging at an "warning" level: the variable `x` is assigned the value of `1`, but because `LOG_LEVEL` is set higher than "info", no message is emitted to the console log. 
+//   LOG_LEVEL=LOG_WARNING;
+//   x = log_info_assign(1, "assigning 1 to x");
+//   // nothing is emitted to the console
+//   // x == 1
+function log_info_assign(val, msg) = logger_assign(val, msg, LOG_INFO);
 
 
 // Function&Module: log_warning()
@@ -274,8 +426,6 @@ module   log_info_if(test, msg) { logger_if(test, msg, LOG_INFO); }
 //   function myfunc(v) = let( _ = log_warning("log message") ) v + 1;
 //   new_v = myfunc(1);
 //   // emits to the console:  ECHO: "WARNING: log message"
-// Todo:
-//   There's *gotta* be a way to call functions within functions that don't return anything not be a syntax error. 
 // See Also: LOG_LEVEL, log_debug(), log_info(), log_warning(), log_error(), log_fatal()
 function log_warning(msg) = logger(msg, LOG_WARNING);
 module   log_warning(msg) { logger(msg, LOG_WARNING); }
@@ -291,11 +441,11 @@ module   log_warning(msg) { logger(msg, LOG_WARNING); }
 //   log message prefixed with "WARNING" if the `test` evaluates to `true` and if the global 
 //   `LOG_LEVEL` is at or lower than `LOG_WARNING`. 
 //   .
-//   When invoked as a module, `log_warning_if()` produces no model or element for drawing. 
+//   When invoked as a module, `log_warning_if()` does not produce a model or element for drawing. 
 //   .
 //   When invoked as a function, `log_warning_if()` returns the evaluated value of `test`. 
 // Arguments:
-//   test = An evaluatable express, or a flat boolean expression. No default. 
+//   test = An evaluatable expression, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_WARNING;
@@ -321,6 +471,80 @@ module   log_warning(msg) { logger(msg, LOG_WARNING); }
 //   // v == false
 function log_warning_if(test, msg) = logger_if(test, msg, LOG_WARNING);
 module   log_warning_if(test, msg) { logger_if(test, msg, LOG_WARNING); }
+
+
+// Function&Module: log_warning_unless()
+// Usage: as a module
+//   log_warning_unless(test, msg);
+// Usage: as a function:
+//   bool = log_warning_unless(test, msg);
+// Description:
+//   Given an evaluatable boolean test, and a log message as either a single string or list, emit a 
+//   log message prefixed with "WARNING" if the `test` does not evaluate to `true` and if the global 
+//   `LOG_LEVEL` is at or lower than `LOG_WARNING`. 
+//   .
+//   When invoked as a module, `log_warning_unless()` does not produce a model or element for drawing. 
+//   .
+//   When invoked as a function, `log_warning_unless()` returns the evaluated value of `test`. 
+// Arguments:
+//   test = An evaluatable expression, or a flat boolean expression. No default. 
+//   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+// Example(NORENDER): when invoked as a module
+//   LOG_LEVEL = LOG_WARNING;
+//   log_warning_unless(false, "log message");
+//   // emits to the console:  ECHO: "WARNING: log message"
+// Example(NORENDER): when invoked as a module 
+//   LOG_LEVEL = LOG_WARNING;
+//   log_warning_unless(1 < 0, ["message with additional info:", 1]);
+//   // emits to the console:  ECHO: "WARNING: message with additional info: 1"
+// Example(NORENDER): when invoked as a module and `test` does not evaluate to false
+//   LOG_LEVEL = LOG_WARNING;
+//   log_warning_unless(0 < 1, ["message with additional info:", 1]);
+//   // nothing is emitted to the console
+// Example(NORENDER): when invoked as a function
+//   LOG_LEVEL = LOG_WARNING;
+//   v = log_warning_unless(1 < 0, "log message");
+//   // emits to the console: ECHO: "WARNING: log message"
+//   // v == false
+// Example(NORENDER): when invoked as a function and `test` does not evaluate to false
+//   LOG_LEVEL = LOG_WARNING;
+//   v = log_warning_unless(0 < 1, "log message");
+//   // nothing is emitted to the console
+//   // v == true
+function log_warning_unless(test, msg) = logger_unless(test, msg, LOG_WARNING);
+module   log_warning_unless(test, msg) { logger_unless(test, msg, LOG_WARNING); }
+
+
+// Function: log_warning_assign()
+// Usage:
+//   val = log_warning_assign(val);
+//   val = log_warning_assign(val, <msg>);
+// Description:
+//   Given a value, `log_warning_assign()` will log that the value `val` is being 
+//   assigned, and then will return the value `val`. If an optional log message 
+//   `msg` is specified, that message will be log instead. 
+//   .
+//   The log message is emitted according to the logging level as is normally done 
+//   via `logger()`: if `LOG_LEVEL` isn't set to at least `LOG_WARNING`, the message 
+//   will not be emitted. 
+//   .
+//   The given value `val` is returned regardless of whether a log message was emitted.
+// Arguments:
+//   val = An arbitrary value.
+//   msg = The message to emit. `msg` can be either a literal string, or a list of elements. If unspecified, a placeholder message will be used.
+// Continues:
+//   There is no corresponding `log_warning_assign()` module. 
+// Example(NORENDER): logging assignment information at a "warning" level: the variable `x` is assigned the value of `1`, and there is a log message saying this was done.
+//   LOG_LEVEL=LOG_WARNING;
+//   x = log_warning_assign(1, "assigning 1 to x");
+//   // emits to the console: ECHO: "WARNING: assigning 1 to x"
+//   // x == 1
+// Example(NORENDER): logging at an "error" level: the variable `x` is assigned the value of `1`, but because `LOG_LEVEL` is set higher than "warning", no message is emitted to the console log. 
+//   LOG_LEVEL=LOG_ERROR;
+//   x = log_warning_assign(1, "assigning 1 to x");
+//   // nothing is emitted to the console
+//   // x == 1
+function log_warning_assign(val, msg) = logger_assign(val, msg, LOG_WARNING);
 
 
 // Function&Module: log_error()
@@ -350,8 +574,6 @@ module   log_warning_if(test, msg) { logger_if(test, msg, LOG_WARNING); }
 //   function myfunc(v) = let( _ = log_error("log message") ) v + 1;
 //   new_v = myfunc(1);
 //   // emits to the console:  ECHO: "ERROR: log message"
-// Todo:
-//   There's *gotta* be a way to call functions within functions that don't return anything not be a syntax error. 
 // See Also: LOG_LEVEL, log_debug(), log_info(), log_warning(), log_error(), log_fatal()
 function log_error(msg) = logger(msg, LOG_ERROR);
 module   log_error(msg) { logger(msg, LOG_ERROR); }
@@ -367,7 +589,7 @@ module   log_error(msg) { logger(msg, LOG_ERROR); }
 //   log message prefixed with "ERROR" if the `test` evaluates to `true` and if the global 
 //   `LOG_LEVEL` is at or lower than `LOG_ERROR`. 
 //   .
-//   When invoked as a module, `log_error_if()` produces no model or element for drawing. 
+//   When invoked as a module, `log_error_if()` does not produce a model or element for drawing. 
 //   .
 //   When invoked as a function, `log_error_if()` returns the evaluated value of `test`. 
 // Arguments:
@@ -399,6 +621,80 @@ function log_error_if(test, msg) = logger_if(test, msg, LOG_ERROR);
 module   log_error_if(test, msg) { logger_if(test, msg, LOG_ERROR); }
 
 
+// Function&Module: log_error_unless()
+// Usage: as a module
+//   log_error_unless(test, msg);
+// Usage: as a function:
+//   bool = log_error_unless(test, msg);
+// Description:
+//   Given an evaluatable boolean test, and a log message as either a single string or list, emit a 
+//   log message prefixed with "ERROR" if the `test` does not evaluate to `true` and if the global 
+//   `LOG_LEVEL` is at or lower than `LOG_ERROR`. 
+//   .
+//   When invoked as a module, `log_error_unless()` does not produce a model or element for drawing. 
+//   .
+//   When invoked as a function, `log_error_unless()` returns the evaluated value of `test`. 
+// Arguments:
+//   test = An evaluatable expression, or a flat boolean expression. No default. 
+//   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+// Example(NORENDER): when invoked as a module
+//   LOG_LEVEL = LOG_ERROR;
+//   log_error_unless(false, "log message");
+//   // emits to the console:  ECHO: "ERROR: log message"
+// Example(NORENDER): when invoked as a module 
+//   LOG_LEVEL = LOG_ERROR;
+//   log_error_unless(1 < 0, ["message with additional info:", 1]);
+//   // emits to the console:  ECHO: "ERROR: message with additional info: 1"
+// Example(NORENDER): when invoked as a module and `test` does not evaluate to false
+//   LOG_LEVEL = LOG_ERROR;
+//   log_error_unless(0 < 1, ["message with additional info:", 1]);
+//   // nothing is emitted to the console
+// Example(NORENDER): when invoked as a function
+//   LOG_LEVEL = LOG_ERROR;
+//   v = log_error_unless(1 < 0, "log message");
+//   // emits to the console: ECHO: "ERROR: log message"
+//   // v == false
+// Example(NORENDER): when invoked as a function and `test` does not evaluate to false
+//   LOG_LEVEL = LOG_ERROR;
+//   v = log_error_unless(0 < 1, "log message");
+//   // nothing is emitted to the console
+//   // v == true
+function log_error_unless(test, msg) = logger_unless(test, msg, LOG_ERROR);
+module   log_error_unless(test, msg) { logger_unless(test, msg, LOG_ERROR); }
+
+
+// Function: log_error_assign()
+// Usage:
+//   val = log_error_assign(val);
+//   val = log_error_assign(val, <msg>);
+// Description:
+//   Given a value, `log_error_assign()` will log that the value `val` is being 
+//   assigned, and then will return the value `val`. If an optional log message 
+//   `msg` is specified, that message will be log instead. 
+//   .
+//   The log message is emitted according to the logging level as is normally done 
+//   via `logger()`: if `LOG_LEVEL` isn't set to at least `LOG_ERROR`, the message 
+//   will not be emitted. 
+//   .
+//   The given value `val` is returned regardless of whether a log message was emitted.
+// Arguments:
+//   val = An arbitrary value.
+//   msg = The message to emit. `msg` can be either a literal string, or a list of elements. If unspecified, a placeholder message will be used.
+// Continues:
+//   There is no corresponding `log_error_assign()` module. 
+// Example(NORENDER): logging assignment information at a "error" level: the variable `x` is assigned the value of `1`, and there is a log message saying this was done.
+//   LOG_LEVEL=LOG_ERROR;
+//   x = log_error_assign(1, "assigning 1 to x");
+//   // emits to the console: ECHO: "ERROR: assigning 1 to x"
+//   // x == 1
+// Example(NORENDER): logging at an "fatal" level: the variable `x` is assigned the value of `1`, but because `LOG_LEVEL` is set higher than "error", no message is emitted to the console log. 
+//   LOG_LEVEL=LOG_FATAL;
+//   x = log_error_assign(1, "assigning 1 to x");
+//   // nothing is emitted to the console
+//   // x == 1
+function log_error_assign(val, msg) = logger_assign(val, msg, LOG_ERROR);
+
+
 // Function&Module: log_fatal()
 // Usage: as a module
 //   log_fatal(msg);
@@ -427,11 +723,9 @@ module   log_error_if(test, msg) { logger_if(test, msg, LOG_ERROR); }
 //   function myfunc(v) = let( _ = log_fatal("log message") ) v + 1;
 //   new_v = myfunc(1);
 //   // emits to the console:  ERROR: Assertion 'false' failed: "FATAL: log message" in file ..., line ... 
-// Todo:
-//   There's *gotta* be a way to call functions within functions that don't return anything not be a syntax error. 
 // See Also: LOG_LEVEL, log_debug(), log_info(), log_warning(), log_error(), log_fatal()
-function log_fatal(msg) = assert(false, format_log(msg, level=LOG_FATAL));
-module   log_fatal(msg) { assert(false, format_log(msg, level=LOG_FATAL)); }
+function log_fatal(msg, test=false) = assert(test, format_log(msg, level=LOG_FATAL)) test;
+module   log_fatal(msg, test=false) { assert(test, format_log(msg, level=LOG_FATAL)); }
 
 
 // Function&Module: log_fatal_if()
@@ -448,7 +742,7 @@ module   log_fatal(msg) { assert(false, format_log(msg, level=LOG_FATAL)); }
 //   .
 //   When invoked as a function, `log_fatal_if()` halts execution of the .scad file.
 // Arguments:
-//   test = An evaluatable express, or a flat boolean expression. No default. 
+//   test = An evaluatable expression, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_FATAL;
@@ -472,10 +766,54 @@ module   log_fatal(msg) { assert(false, format_log(msg, level=LOG_FATAL)); }
 //   v = log_fatal_if(0 > 1, "log message");
 //   // nothing is emitted to the console
 //   // v == false
-function log_fatal_if(test, msg) = logger_if(test, msg, LOG_FATAL);
-module   log_fatal_if(test, msg) { logger_if(test, msg, LOG_FATAL); }
+function log_fatal_if(test, msg) = log_fatal(msg, test=!test);
+module   log_fatal_if(test, msg) { log_fatal(msg, test=!test); }
 
 
+// Function&Module: log_fatal_unless()
+// Usage: as a module
+//   log_fatal_unless(test, msg);
+// Usage: as a function:
+//   bool = log_fatal_unless(test, msg);
+// Description:
+//   Given an evaluatable boolean test, and a log message as either a single string or list, emit a 
+//   log message prefixed with "FATAL" if the `test` does not evaluate to `true` and if the global 
+//   `LOG_LEVEL` is at or lower than `LOG_FATAL`. 
+//   .
+//   When invoked as a module, `log_fatal_unless()` halts execution of the .scad file.
+//   .
+//   When invoked as a function, `log_fatal_unless()` halts execution of the .scad file.
+// Arguments:
+//   test = An evaluatable expression, or a flat boolean expression. No default. 
+//   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+// Example(NORENDER): when invoked as a module
+//   LOG_LEVEL = LOG_FATAL;
+//   log_fatal_unless(false, "log message");
+//   // emits to the console:  ERROR: Assertion 'false' failed: "FATAL: log message" in file ..., line ... 
+// Example(NORENDER): when invoked as a module 
+//   LOG_LEVEL = LOG_FATAL;
+//   log_fatal_unless(1 < 0, ["message with additional info:", 1]);
+//   // emits to the console:  ERROR: Assertion 'false' failed: "FATAL: message with additional info: 1" in file ..., line ... 
+// Example(NORENDER): when invoked as a module and `test` does not evaluate to false
+//   LOG_LEVEL = LOG_FATAL;
+//   log_fatal_unless(0 < 1, ["message with additional info:", 1]);
+//   // nothing is emitted to the console, execution of the .scad file is *not* halted.
+// Example(NORENDER): when invoked as a function
+//   LOG_LEVEL = LOG_FATAL;
+//   v = log_fatal_unless(1 < 0, "log message");
+//   // emits to the console:  ERROR: Assertion 'false' failed: "FATAL: log message" in file ..., line ... 
+//   // v is not evaluatable, because execution will have been halted
+// Example(NORENDER): when invoked as a function and `test` does not evaluate to false
+//   LOG_LEVEL = LOG_FATAL;
+//   v = log_fatal_unless(0 < 1, "log message");
+//   // nothing is emitted to the console
+//   // v == true
+function log_fatal_unless(test, msg) = log_fatal(msg, test=test);
+module   log_fatal_unless(test, msg) { log_fatal(msg, test=test); }
+
+
+// Section: Core Logging Functions 
+//
 // Function&Module: logger()
 // Usage: as a module
 //   logger(msg, msg_level);
@@ -493,9 +831,7 @@ module   log_fatal_if(test, msg) { logger_if(test, msg, LOG_FATAL); }
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
 //   msg_level = The logging level *of the message*. 
 function logger(msg, msg_level) = (log_match(msg_level)) ? echo(format_log(msg, level=msg_level)) msg : undef;
-module   logger(msg, msg_level) {
-    if (log_match(msg_level)) echo(format_log(msg, level=msg_level));
-}
+module   logger(msg, msg_level) { if (log_match(msg_level)) echo(format_log(msg, level=msg_level)); }
 
 
 // Function&Module: logger_if()
@@ -504,7 +840,9 @@ module   logger(msg, msg_level) {
 // Usage: as a function
 //   result = logger_if(test, msg, msg_level);
 // Description:
-//   x.
+//   Conditionally emits given `msg` at the log level `msg_level` if given `test` evaluates to `true`. 
+//   `test` is expected to be a boolean comparison result, one of either `true` or `false`. 
+//   Mnenomic: "If this test is true, log this message."
 //   .
 //   When invoked as a module, `logger_if()` produces no model or element for drawing. 
 //   .
@@ -515,9 +853,54 @@ module   logger(msg, msg_level) {
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
 //   msg_level = The logging level *of the message*. 
 function logger_if(test, msg, msg_level) = (test) ? logger(msg, msg_level) && test : test;
-module   logger_if(test, msg, msg_level) {
-    if (test) logger(msg, msg_level);
-}
+module   logger_if(test, msg, msg_level) { if (test) logger(msg, msg_level); }
+
+
+// Function&Module: logger_unless()
+// Usage: as a module
+//   logger_unless(test, msg, msg_level);
+// Usage: as a function
+//   result = logger_unless(test, msg, msg_level);
+// Description:
+//   Conditionally emits given `msg` at the log level `msg_level` if given `test` evaluates to `false`. 
+//   `test` is expected to be a boolean comparison result, one of either `true` or `false`. 
+//   Mnenomic: "Unless this test is true, log this message."
+//   .
+//   When invoked as a module, `logger_unless()` produces no model or element for drawing. 
+//   .
+//   When invoked as a function, `logger_unless()` returns the evaluated value of `test`.
+//   *This is not the same behavior as `logger()`.*
+// Arguments:
+//   test = A boolean result from an evaluation test. 
+//   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+//   msg_level = The logging level *of the message*. 
+function logger_unless(test, msg, msg_level) = logger_if(!test, msg, msg_level);
+module   logger_unless(test, msg, msg_level) { logger_if(!test, msg, msg_level); }
+
+
+// Function: logger_assign()
+// Usage:
+//   val = logger_assign(val, msg, msg_level);
+// Description:
+//   Given a value `val`, a log message `msg`, and a logging level `msg_level`, 
+//   emit `msg` at the given `msg_level`, and return `val` as-is. 
+//   If `msg` is specified as `undef`, a limited placeholder log message will be 
+//   generated, incorporating the `val`'s value.
+//   .
+//   The log `msg` is emitted according to the logging level as is normally done 
+//   via `logger()`. The given value `val` is returned regardless of whether a 
+//   log message was emitted.
+//   . 
+//   `val` is not incorporated into `msg`, nor used in evaluating 
+//   whether `msg` should be emitted.
+// Arguments:
+//   val = An arbitrary value. 
+//   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+//   msg_level = The logging level *of the message*. 
+// Continues:
+//   Because this activity is focused around variable assignment, there is no corresponding 
+//   `logger_assign()` module: something is always returned.
+function logger_assign(val, msg, msg_level) = let(_ = logger((msg == undef) ? msg : ["assigning value:", val], msg_level)) val;
 
 
 // Function: format_log()
