@@ -900,7 +900,7 @@ module   logger_unless(test, msg, msg_level) { logger_if(!test, msg, msg_level);
 // Continues:
 //   Because this activity is focused around variable assignment, there is no corresponding 
 //   `logger_assign()` module: something is always returned.
-function logger_assign(val, msg, msg_level) = let(_ = logger((msg == undef) ? msg : ["assigning value:", val], msg_level)) val;
+function logger_assign(val, msg, msg_level) = let(_ = logger((msg == undef) ? ["assigning value:", val] : msg, msg_level)) val;
 
 
 // Function: format_log()
