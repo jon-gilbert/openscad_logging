@@ -900,6 +900,8 @@ module   logger_unless(test, msg, msg_level) { logger_if(!test, msg, msg_level);
 // Continues:
 //   Because this activity is focused around variable assignment, there is no corresponding 
 //   `logger_assign()` module: something is always returned.
+// Todo:
+//   It sure would be neat if `msg` could be substr'd with `val`, to be emitted to the console log; ideally, without an external lib.
 function logger_assign(val, msg, msg_level) = let(_ = logger((msg == undef) ? ["assigning value:", val] : msg, msg_level)) val;
 
 
