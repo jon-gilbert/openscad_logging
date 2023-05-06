@@ -1538,8 +1538,7 @@ The log `msg` is emitted according to the logging level as is normally done
 via `logger()`. The given value `val` is returned regardless of whether a
 log message was emitted.
 
-`val` is not incorporated into `msg`, nor used in evaluating
-whether `msg` should be emitted.
+`val` is not used in evaluating whether `msg` should be emitted.
 
 **Arguments:** 
 

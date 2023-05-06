@@ -891,8 +891,7 @@ module   logger_unless(test, msg, msg_level) { logger_if(!test, msg, msg_level);
 //   via `logger()`. The given value `val` is returned regardless of whether a 
 //   log message was emitted.
 //   . 
-//   `val` is not incorporated into `msg`, nor used in evaluating 
-//   whether `msg` should be emitted.
+//   `val` is not used in evaluating whether `msg` should be emitted.
 // Arguments:
 //   val = An arbitrary value. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
@@ -900,9 +899,14 @@ module   logger_unless(test, msg, msg_level) { logger_if(!test, msg, msg_level);
 // Continues:
 //   Because this activity is focused around variable assignment, there is no corresponding 
 //   `logger_assign()` module: something is always returned.
-// Todo:
-//   It sure would be neat if `msg` could be substr'd with `val`, to be emitted to the console log; ideally, without an external lib.
-function logger_assign(val, msg, msg_level) = let(_ = logger((msg == undef) ? ["assigning value:", val] : msg, msg_level)) val;
+function logger_assign(val, msg, msg_level) = 
+    let(
+        _ = logger(
+            (is_undef(msg))
+                ? ["assigning value:", val]
+                : (is_list(msg)) ? concat(msg, val) : str(msg, val),
+            msg_level)
+    ) val;
 
 
 // Function: format_log()
