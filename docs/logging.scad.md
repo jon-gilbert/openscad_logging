@@ -510,7 +510,7 @@ Given an evaluatable boolean test, and a log message as either a single string o
 log message prefixed with "INFO" if the `test` evaluates to `true` and if the global
 `LOG_LEVEL` is at or lower than `LOG_INFO`.
 
-When invoked as a module, `log_info_if()` does not produce no model or element for drawing.
+When invoked as a module, `log_info_if()` does not produce a model or element for drawing.
 
 When invoked as a function, `log_info_if()` returns the evaluated value of `test`.
 
