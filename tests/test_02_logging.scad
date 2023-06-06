@@ -20,6 +20,12 @@ module test_format_log() {
 
     assert(format_log(["aa", [1, 2]], LOG_DEBUG)   == "DEBUG: aa [1, 2]"  );
 
+    c = "c";
+    assert(format_log("abcd", LOG_FATAL, c)   == "FATAL: c(): abcd"  );
+    assert(format_log("abcd", LOG_ERROR, c)   == "ERROR: c(): abcd"  );
+    assert(format_log("abcd", LOG_WARNING, c) == "WARNING: c(): abcd");
+    assert(format_log("abcd", LOG_INFO, c)    == "INFO: c(): abcd");
+    assert(format_log("abcd", LOG_DEBUG, c)   == "DEBUG: c(): abcd"  );
 }
 test_format_log();
 
@@ -57,4 +63,18 @@ module test_log_match() {
 }
 test_log_match();
 
+
+module test_log__log_pfc() {
+    c = _log_pfc();
+    assert(c == "test_log__log_pfc", "Calls to _log_pfc() should have correct module name");
+
+    d = _log_pfc(1);
+    assert(d == undef, "Calls to _log_pfc() with no or limited hierarchy should be undef");
+
+    module _test_log__log_pfc_a(r=_log_pfc(1)) {
+        assert(r == "test_log__log_pfc", "Calls to _log_pfc() as a default argument to a module should return correct caller name");
+    }
+    _test_log__log_pfc_a();
+}
+test_log__log_pfc();
 

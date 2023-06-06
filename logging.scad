@@ -117,6 +117,7 @@ LOG_NAMES = [undef, "DEBUG", "INFO", "WARNING", "ERROR", "FATAL"];
 //   When invoked as a function, `log_debug()` returns `msg` if it should have emitted to the console, or undef. 
 // Arguments:
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_DEBUG;
 //   log_debug("log message");
@@ -131,8 +132,8 @@ LOG_NAMES = [undef, "DEBUG", "INFO", "WARNING", "ERROR", "FATAL"];
 //   new_v = myfunc(1);
 //   // emits to the console:  ECHO: "DEBUG: log message"
 // See Also: LOG_LEVEL, log_debug(), log_info(), log_warning(), log_error(), log_fatal()
-function log_debug(msg) = logger(msg, LOG_DEBUG);
-module   log_debug(msg) { logger(msg, LOG_DEBUG); }
+function log_debug(msg, caller=_log_pfc()) = logger(msg, LOG_DEBUG, caller=caller);
+module   log_debug(msg, caller=_log_pfc(1)) { logger(msg, LOG_DEBUG, caller=caller); }
 
 
 // Function&Module: log_debug_if()
@@ -151,6 +152,7 @@ module   log_debug(msg) { logger(msg, LOG_DEBUG); }
 // Arguments:
 //   test = An evaluatable expression, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_DEBUG;
 //   log_debug_if(true, "log message");
@@ -173,8 +175,8 @@ module   log_debug(msg) { logger(msg, LOG_DEBUG); }
 //   v = log_debug_if(0 > 1, "log message");
 //   // nothing is emitted to the console
 //   // v == false
-function log_debug_if(test, msg) = logger_if(test, msg, LOG_DEBUG);
-module   log_debug_if(test, msg) { logger_if(test, msg, LOG_DEBUG); }
+function log_debug_if(test, msg, caller=_log_pfc()) = logger_if(test, msg, LOG_DEBUG, caller=caller);
+module   log_debug_if(test, msg, caller=_log_pfc(1)) { logger_if(test, msg, LOG_DEBUG, caller=caller); }
 
 
 // Function&Module: log_debug_unless()
@@ -193,6 +195,7 @@ module   log_debug_if(test, msg) { logger_if(test, msg, LOG_DEBUG); }
 // Arguments:
 //   test = An evaluatable expression, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_DEBUG;
 //   log_debug_unless(false, "log message");
@@ -215,8 +218,8 @@ module   log_debug_if(test, msg) { logger_if(test, msg, LOG_DEBUG); }
 //   v = log_debug_unless(0 < 1, "log message");
 //   // nothing is emitted to the console
 //   // v == true
-function log_debug_unless(test, msg) = logger_unless(test, msg, LOG_DEBUG);
-module   log_debug_unless(test, msg) { logger_unless(test, msg, LOG_DEBUG); }
+function log_debug_unless(test, msg, caller=_log_pfc()) = logger_unless(test, msg, LOG_DEBUG, caller=caller);
+module   log_debug_unless(test, msg, caller=_log_pfc(1)) { logger_unless(test, msg, LOG_DEBUG, caller=caller); }
 
 
 // Function: log_debug_assign()
@@ -236,6 +239,7 @@ module   log_debug_unless(test, msg) { logger_unless(test, msg, LOG_DEBUG); }
 // Arguments:
 //   val = An arbitrary value.
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements. If unspecified, a placeholder message will be used.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Continues:
 //   There is no corresponding `log_debug_assign()` module. 
 // Example(NORENDER): logging assignment information at a "debug" level: the variable `x` is assigned the value of `1`, and there is a log message saying this was done.
@@ -248,7 +252,7 @@ module   log_debug_unless(test, msg) { logger_unless(test, msg, LOG_DEBUG); }
 //   x = log_debug_assign(1, "assigning 1 to x");
 //   // nothing is emitted to the console
 //   // x == 1
-function log_debug_assign(val, msg) = logger_assign(val, msg, LOG_DEBUG);
+function log_debug_assign(val, msg, caller=_log_pfc()) = logger_assign(val, msg, LOG_DEBUG, caller=caller);
 
 
 // Function&Module: log_info()
@@ -265,6 +269,7 @@ function log_debug_assign(val, msg) = logger_assign(val, msg, LOG_DEBUG);
 //   When invoked as a function, `log_info()` returns `msg` if it should have emitted to the console, or undef. 
 // Arguments:
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_INFO;
 //   log_info("log message");
@@ -279,8 +284,8 @@ function log_debug_assign(val, msg) = logger_assign(val, msg, LOG_DEBUG);
 //   new_v = myfunc(1);
 //   // emits to the console:  ECHO: "INFO: log message"
 // See Also: LOG_LEVEL, log_debug(), log_info(), log_warning(), log_error(), log_fatal()
-function log_info(msg) = logger(msg, LOG_INFO);
-module   log_info(msg) { logger(msg, LOG_INFO); }
+function log_info(msg, caller=_log_pfc()) = logger(msg, LOG_INFO, caller=caller);
+module   log_info(msg, caller=_log_pfc(1)) { logger(msg, LOG_INFO, caller=caller); }
 
 
 // Function&Module: log_info_if()
@@ -293,12 +298,13 @@ module   log_info(msg) { logger(msg, LOG_INFO); }
 //   log message prefixed with "INFO" if the `test` evaluates to `true` and if the global 
 //   `LOG_LEVEL` is at or lower than `LOG_INFO`. 
 //   .
-//   When invoked as a module, `log_info_if()` does not produce no model or element for drawing. 
+//   When invoked as a module, `log_info_if()` does not produce a model or element for drawing. 
 //   .
 //   When invoked as a function, `log_info_if()` returns the evaluated value of `test`. 
 // Arguments:
 //   test = An evaluatable expression, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_INFO;
 //   log_info_if(true, "log message");
@@ -321,8 +327,8 @@ module   log_info(msg) { logger(msg, LOG_INFO); }
 //   v = log_info_if(0 > 1, "log message");
 //   // nothing is emitted to the console
 //   // v == false
-function log_info_if(test, msg) = logger_if(test, msg, LOG_INFO);
-module   log_info_if(test, msg) { logger_if(test, msg, LOG_INFO); }
+function log_info_if(test, msg, caller=_log_pfc()) = logger_if(test, msg, LOG_INFO, caller=caller);
+module   log_info_if(test, msg, caller=_log_pfc(1)) { logger_if(test, msg, LOG_INFO, caller=caller); }
 
 
 // Function&Module: log_info_unless()
@@ -341,6 +347,7 @@ module   log_info_if(test, msg) { logger_if(test, msg, LOG_INFO); }
 // Arguments:
 //   test = An evaluatable express, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_INFO;
 //   log_info_unless(false, "log message");
@@ -363,8 +370,8 @@ module   log_info_if(test, msg) { logger_if(test, msg, LOG_INFO); }
 //   v = log_info_unless(0 < 1, "log message");
 //   // nothing is emitted to the console
 //   // v == true
-function log_info_unless(test, msg) = logger_unless(test, msg, LOG_INFO);
-module   log_info_unless(test, msg) { logger_unless(test, msg, LOG_INFO); }
+function log_info_unless(test, msg, caller=_log_pfc()) = logger_unless(test, msg, LOG_INFO, caller=caller);
+module   log_info_unless(test, msg, caller=_log_pfc(1)) { logger_unless(test, msg, LOG_INFO, caller=caller); }
 
 
 // Function: log_info_assign()
@@ -384,6 +391,7 @@ module   log_info_unless(test, msg) { logger_unless(test, msg, LOG_INFO); }
 // Arguments:
 //   val = An arbitrary value.
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements. If unspecified, a placeholder message will be used.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Continues:
 //   There is no corresponding `log_info_assign()` module. 
 // Example(NORENDER): logging assignment information at a "info" level: the variable `x` is assigned the value of `1`, and there is a log message saying this was done.
@@ -396,7 +404,7 @@ module   log_info_unless(test, msg) { logger_unless(test, msg, LOG_INFO); }
 //   x = log_info_assign(1, "assigning 1 to x");
 //   // nothing is emitted to the console
 //   // x == 1
-function log_info_assign(val, msg) = logger_assign(val, msg, LOG_INFO);
+function log_info_assign(val, msg, caller=_log_pfc()) = logger_assign(val, msg, LOG_INFO, caller=caller);
 
 
 // Function&Module: log_warning()
@@ -413,6 +421,7 @@ function log_info_assign(val, msg) = logger_assign(val, msg, LOG_INFO);
 //   When invoked as a function, `log_warning()` returns `msg` if it should have emitted to the console, or undef. 
 // Arguments:
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_WARNING;
 //   log_warning("log message");
@@ -427,8 +436,8 @@ function log_info_assign(val, msg) = logger_assign(val, msg, LOG_INFO);
 //   new_v = myfunc(1);
 //   // emits to the console:  ECHO: "WARNING: log message"
 // See Also: LOG_LEVEL, log_debug(), log_info(), log_warning(), log_error(), log_fatal()
-function log_warning(msg) = logger(msg, LOG_WARNING);
-module   log_warning(msg) { logger(msg, LOG_WARNING); }
+function log_warning(msg, caller=_log_pfc()) = logger(msg, LOG_WARNING, caller=caller);
+module   log_warning(msg, caller=_log_pfc(1)) { logger(msg, LOG_WARNING, caller=caller); }
 
 
 // Function&Module: log_warning_if()
@@ -447,6 +456,7 @@ module   log_warning(msg) { logger(msg, LOG_WARNING); }
 // Arguments:
 //   test = An evaluatable expression, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_WARNING;
 //   log_warning_if(true, "log message");
@@ -469,8 +479,8 @@ module   log_warning(msg) { logger(msg, LOG_WARNING); }
 //   v = log_warning_if(0 > 1, "log message");
 //   // nothing is emitted to the console
 //   // v == false
-function log_warning_if(test, msg) = logger_if(test, msg, LOG_WARNING);
-module   log_warning_if(test, msg) { logger_if(test, msg, LOG_WARNING); }
+function log_warning_if(test, msg, caller=_log_pfc()) = logger_if(test, msg, LOG_WARNING, caller=caller);
+module   log_warning_if(test, msg, caller=_log_pfc(1)) { logger_if(test, msg, LOG_WARNING, caller=caller); }
 
 
 // Function&Module: log_warning_unless()
@@ -489,6 +499,7 @@ module   log_warning_if(test, msg) { logger_if(test, msg, LOG_WARNING); }
 // Arguments:
 //   test = An evaluatable expression, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_WARNING;
 //   log_warning_unless(false, "log message");
@@ -511,8 +522,8 @@ module   log_warning_if(test, msg) { logger_if(test, msg, LOG_WARNING); }
 //   v = log_warning_unless(0 < 1, "log message");
 //   // nothing is emitted to the console
 //   // v == true
-function log_warning_unless(test, msg) = logger_unless(test, msg, LOG_WARNING);
-module   log_warning_unless(test, msg) { logger_unless(test, msg, LOG_WARNING); }
+function log_warning_unless(test, msg, caller=_log_pfc()) = logger_unless(test, msg, LOG_WARNING, caller=caller);
+module   log_warning_unless(test, msg, caller=_log_pfc(1)) { logger_unless(test, msg, LOG_WARNING, caller=caller); }
 
 
 // Function: log_warning_assign()
@@ -532,6 +543,7 @@ module   log_warning_unless(test, msg) { logger_unless(test, msg, LOG_WARNING); 
 // Arguments:
 //   val = An arbitrary value.
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements. If unspecified, a placeholder message will be used.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Continues:
 //   There is no corresponding `log_warning_assign()` module. 
 // Example(NORENDER): logging assignment information at a "warning" level: the variable `x` is assigned the value of `1`, and there is a log message saying this was done.
@@ -544,7 +556,7 @@ module   log_warning_unless(test, msg) { logger_unless(test, msg, LOG_WARNING); 
 //   x = log_warning_assign(1, "assigning 1 to x");
 //   // nothing is emitted to the console
 //   // x == 1
-function log_warning_assign(val, msg) = logger_assign(val, msg, LOG_WARNING);
+function log_warning_assign(val, msg, caller=_log_pfc()) = logger_assign(val, msg, LOG_WARNING, caller=caller);
 
 
 // Function&Module: log_error()
@@ -561,6 +573,7 @@ function log_warning_assign(val, msg) = logger_assign(val, msg, LOG_WARNING);
 //   When invoked as a function, `log_error()` returns `msg` if it should have emitted to the console, or undef. 
 // Arguments:
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_ERROR;
 //   log_error("log message");
@@ -575,8 +588,8 @@ function log_warning_assign(val, msg) = logger_assign(val, msg, LOG_WARNING);
 //   new_v = myfunc(1);
 //   // emits to the console:  ECHO: "ERROR: log message"
 // See Also: LOG_LEVEL, log_debug(), log_info(), log_warning(), log_error(), log_fatal()
-function log_error(msg) = logger(msg, LOG_ERROR);
-module   log_error(msg) { logger(msg, LOG_ERROR); }
+function log_error(msg, caller=_log_pfc()) = logger(msg, LOG_ERROR, caller=caller);
+module   log_error(msg, caller=_log_pfc(1)) { logger(msg, LOG_ERROR, caller=caller); }
 
 
 // Function&Module: log_error_if()
@@ -595,6 +608,7 @@ module   log_error(msg) { logger(msg, LOG_ERROR); }
 // Arguments:
 //   test = An evaluatable express, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_ERROR;
 //   log_error_if(true, "log message");
@@ -617,8 +631,8 @@ module   log_error(msg) { logger(msg, LOG_ERROR); }
 //   v = log_error_if(0 > 1, "log message");
 //   // nothing is emitted to the console
 //   // v == false
-function log_error_if(test, msg) = logger_if(test, msg, LOG_ERROR);
-module   log_error_if(test, msg) { logger_if(test, msg, LOG_ERROR); }
+function log_error_if(test, msg, caller=_log_pfc()) = logger_if(test, msg, LOG_ERROR, caller=caller);
+module   log_error_if(test, msg, caller=_log_pfc(1)) { logger_if(test, msg, LOG_ERROR, caller=caller); }
 
 
 // Function&Module: log_error_unless()
@@ -637,6 +651,7 @@ module   log_error_if(test, msg) { logger_if(test, msg, LOG_ERROR); }
 // Arguments:
 //   test = An evaluatable expression, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_ERROR;
 //   log_error_unless(false, "log message");
@@ -659,8 +674,8 @@ module   log_error_if(test, msg) { logger_if(test, msg, LOG_ERROR); }
 //   v = log_error_unless(0 < 1, "log message");
 //   // nothing is emitted to the console
 //   // v == true
-function log_error_unless(test, msg) = logger_unless(test, msg, LOG_ERROR);
-module   log_error_unless(test, msg) { logger_unless(test, msg, LOG_ERROR); }
+function log_error_unless(test, msg, caller=_log_pfc()) = logger_unless(test, msg, LOG_ERROR, caller=caller);
+module   log_error_unless(test, msg, caller=_log_pfc(1)) { logger_unless(test, msg, LOG_ERROR, caller=caller); }
 
 
 // Function: log_error_assign()
@@ -680,6 +695,7 @@ module   log_error_unless(test, msg) { logger_unless(test, msg, LOG_ERROR); }
 // Arguments:
 //   val = An arbitrary value.
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements. If unspecified, a placeholder message will be used.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Continues:
 //   There is no corresponding `log_error_assign()` module. 
 // Example(NORENDER): logging assignment information at a "error" level: the variable `x` is assigned the value of `1`, and there is a log message saying this was done.
@@ -692,7 +708,7 @@ module   log_error_unless(test, msg) { logger_unless(test, msg, LOG_ERROR); }
 //   x = log_error_assign(1, "assigning 1 to x");
 //   // nothing is emitted to the console
 //   // x == 1
-function log_error_assign(val, msg) = logger_assign(val, msg, LOG_ERROR);
+function log_error_assign(val, msg, caller=_log_pfc()) = logger_assign(val, msg, LOG_ERROR, caller=caller);
 
 
 // Function&Module: log_fatal()
@@ -710,6 +726,7 @@ function log_error_assign(val, msg) = logger_assign(val, msg, LOG_ERROR);
 //   When invoked as a function, `log_fatal()` halts execution of the .scad file. 
 // Arguments:
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_FATAL;
 //   log_fatal("log message");
@@ -724,8 +741,8 @@ function log_error_assign(val, msg) = logger_assign(val, msg, LOG_ERROR);
 //   new_v = myfunc(1);
 //   // emits to the console:  ERROR: Assertion 'false' failed: "FATAL: log message" in file ..., line ... 
 // See Also: LOG_LEVEL, log_debug(), log_info(), log_warning(), log_error(), log_fatal()
-function log_fatal(msg, test=false) = assert(test, format_log(msg, level=LOG_FATAL)) test;
-module   log_fatal(msg, test=false) { assert(test, format_log(msg, level=LOG_FATAL)); }
+function log_fatal(msg, test=false, caller=_log_pfc()) = assert(test, format_log(msg, level=LOG_FATAL, caller=caller)) test;
+module   log_fatal(msg, test=false, caller=_log_pfc(1)) { assert(test, format_log(msg, level=LOG_FATAL, caller=caller)); }
 
 
 // Function&Module: log_fatal_if()
@@ -744,6 +761,7 @@ module   log_fatal(msg, test=false) { assert(test, format_log(msg, level=LOG_FAT
 // Arguments:
 //   test = An evaluatable expression, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_FATAL;
 //   log_fatal_if(true, "log message");
@@ -766,8 +784,8 @@ module   log_fatal(msg, test=false) { assert(test, format_log(msg, level=LOG_FAT
 //   v = log_fatal_if(0 > 1, "log message");
 //   // nothing is emitted to the console
 //   // v == false
-function log_fatal_if(test, msg) = log_fatal(msg, test=!test);
-module   log_fatal_if(test, msg) { log_fatal(msg, test=!test); }
+function log_fatal_if(test, msg, caller=_log_pfc()) = log_fatal(msg, test=!test, caller=caller);
+module   log_fatal_if(test, msg, caller=_log_pfc(1)) { log_fatal(msg, test=!test, caller=caller); }
 
 
 // Function&Module: log_fatal_unless()
@@ -786,6 +804,7 @@ module   log_fatal_if(test, msg) { log_fatal(msg, test=!test); }
 // Arguments:
 //   test = An evaluatable expression, or a flat boolean expression. No default. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
+///  caller = The caller of the logger. `caller` may be a literal string. Default: the first available parent module, or `undef` if one is not available.
 // Example(NORENDER): when invoked as a module
 //   LOG_LEVEL = LOG_FATAL;
 //   log_fatal_unless(false, "log message");
@@ -808,8 +827,8 @@ module   log_fatal_if(test, msg) { log_fatal(msg, test=!test); }
 //   v = log_fatal_unless(0 < 1, "log message");
 //   // nothing is emitted to the console
 //   // v == true
-function log_fatal_unless(test, msg) = log_fatal(msg, test=test);
-module   log_fatal_unless(test, msg) { log_fatal(msg, test=test); }
+function log_fatal_unless(test, msg, caller=_log_pfc()) = log_fatal(msg, test=test, caller=caller);
+module   log_fatal_unless(test, msg, caller=_log_pfc(1)) { log_fatal(msg, test=test, caller=caller); }
 
 
 // Section: Core Logging Functions 
@@ -830,8 +849,9 @@ module   log_fatal_unless(test, msg) { log_fatal(msg, test=test); }
 // Arguments:
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
 //   msg_level = The logging level *of the message*. 
-function logger(msg, msg_level) = (log_match(msg_level)) ? echo(format_log(msg, level=msg_level)) msg : undef;
-module   logger(msg, msg_level) { if (log_match(msg_level)) echo(format_log(msg, level=msg_level)); }
+///  caller = The caller of the logger. `caller` may be a literal string. No default
+function logger(msg, msg_level, caller) = (log_match(msg_level)) ? echo(format_log(msg, level=msg_level, caller=caller)) msg : undef;
+module   logger(msg, msg_level, caller) { if (log_match(msg_level)) echo(format_log(msg, level=msg_level, caller=caller)); }
 
 
 // Function&Module: logger_if()
@@ -852,8 +872,9 @@ module   logger(msg, msg_level) { if (log_match(msg_level)) echo(format_log(msg,
 //   test = A boolean result from an evaluation test. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
 //   msg_level = The logging level *of the message*. 
-function logger_if(test, msg, msg_level) = (test) ? logger(msg, msg_level) && test : test;
-module   logger_if(test, msg, msg_level) { if (test) logger(msg, msg_level); }
+///  caller = The caller of the logger. `caller` may be a literal string. No default
+function logger_if(test, msg, msg_level, caller) = (test) ? logger(msg, msg_level, caller) && test : test;
+module   logger_if(test, msg, msg_level, caller) { if (test) logger(msg, msg_level, caller); }
 
 
 // Function&Module: logger_unless()
@@ -874,8 +895,9 @@ module   logger_if(test, msg, msg_level) { if (test) logger(msg, msg_level); }
 //   test = A boolean result from an evaluation test. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
 //   msg_level = The logging level *of the message*. 
-function logger_unless(test, msg, msg_level) = logger_if(!test, msg, msg_level);
-module   logger_unless(test, msg, msg_level) { logger_if(!test, msg, msg_level); }
+///  caller = The caller of the logger. `caller` may be a literal string. No default
+function logger_unless(test, msg, msg_level, caller) = logger_if(!test, msg, msg_level, caller);
+module   logger_unless(test, msg, msg_level, caller) { logger_if(!test, msg, msg_level, caller); }
 
 
 // Function: logger_assign()
@@ -896,16 +918,18 @@ module   logger_unless(test, msg, msg_level) { logger_if(!test, msg, msg_level);
 //   val = An arbitrary value. 
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
 //   msg_level = The logging level *of the message*. 
+///  caller = The caller of the logger. `caller` may be a literal string. No default
 // Continues:
 //   Because this activity is focused around variable assignment, there is no corresponding 
 //   `logger_assign()` module: something is always returned.
-function logger_assign(val, msg, msg_level) = 
+function logger_assign(val, msg, msg_level, caller) = 
     let(
         _ = logger(
             (is_undef(msg))
                 ? ["assigning value:", val]
                 : (is_list(msg)) ? concat(msg, val) : str(msg, val),
-            msg_level)
+            msg_level,
+            caller)
     ) val;
 
 
@@ -921,7 +945,13 @@ function logger_assign(val, msg, msg_level) =
 //   msg = The message to emit. `msg` can be either a literal string, or a list of elements.
 //   ---
 //   level = The logging level at which to create this message. Default: `LOG_LEVEL`. 
-function format_log(msg, level=LOG_LEVEL) = str( LOG_NAMES[level], ": ", _rec_format_log(msg) );
+///  caller = The caller of the logger. `caller` may be a literal string. No default
+function format_log(msg, level=LOG_LEVEL, caller=undef) =
+    str(
+        LOG_NAMES[level], ": ",
+        (caller == undef) ? "" : str(caller, "(): "),
+        _rec_format_log(msg)
+        );
 
 function _rec_format_log(msg, s=" ", i=0, acc="") =
     (!is_list(msg))
@@ -960,5 +990,26 @@ function _rec_format_log(msg, s=" ", i=0, acc="") =
 function log_match(level, global_level=undef) = 
     let(min_level = (global_level) ? global_level : (LOG_LEVEL) ? LOG_LEVEL : LOG_WARNING)
     is_num(level) && is_num(min_level) && level >= min_level;
+
+
+/// Constant: $parent_modules
+/// Description:
+///   This scoped variable is normally only set from OpenSCAD: it is a 
+///   a built-in variable, defined as:
+///   `$parent_modules contains the number of modules in the instantiation stack.`
+///   It is set to `false` here to silence warnings of its presence not having been 
+///   set when there are no parent modules in a called stack; for instance, when 
+///   a logging function is called from the top-most level of an OpenSCAD script.
+///   Setting this value to `false` here seems to have no impact on its ability to report 
+///   parent modules later in execution. 
+$parent_modules = false;
+
+/// Function: _log_pfc()
+/// Usage:
+///   name = _log_pfc();
+/// Description:
+///   Simplified function to ease getting the first parent module available, without  
+///   side-effect errors when not called in a child hirearchy. 
+function _log_pfc(s=0) = (is_num($parent_modules)) ? ($parent_modules > s) ? parent_module(s) : undef : undef;
 
 
