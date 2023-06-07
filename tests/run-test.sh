@@ -2,7 +2,9 @@
 
 echo -n "$1: "
 
-#openscad -o - --export-format echo --hardwarnings --check-parameters true --check-parameter-ranges false "$1" 2>&1 | sed -ze 's/\s*$//' > testrun_out.txt
+output_tmpfile=$(mktemp tests/_$(basename ${1}).XXX.txt)
+
+#openscad -o - --export-format echo --hardwarnings --check-parameters true --check-parameter-ranges false "$1" 2>&1 | sed -ze 's/\s*$//' > ${output_tmpfile}
 # run whatever openscad is set to, specifying an 'echo' format and dumping the output of the script and anything sent to 
 # STDERR to STDOUT. 
 # From that, exclude lines that are '^include <$' and '^use <$' - developer build 2022.04.10 dumps these and no idea why
@@ -10,7 +12,7 @@ echo -n "$1: "
 # character count of a null-output run. 
 openscad -o - --export-format echo --hardwarnings --check-parameters true --check-parameter-ranges false "$1" 2>&1 \
     | egrep -v "^(include|use) <" \
-    | sed -ze 's/\s*$//' > testrun_out.txt
+    | sed -ze 's/\s*$//' > ${output_tmpfile}
 
 # capture openscad's exit status
 _es=$?
@@ -23,7 +25,7 @@ matchtextsuccess=0
 
 if [ -n "${OPENSCAD_NOMATCH_TEXT}" -o -n "${OPENSCAD_MATCH_TEXT}" ]; then
     if [ -n "${OPENSCAD_NOMATCH_TEXT}" ]; then
-        grep -q ${OPENSCAD_NOMATCH_TEXT} testrun_out.txt
+        egrep -q ${OPENSCAD_NOMATCH_TEXT} ${output_tmpfile}
         if [ $? -eq 0 ]; then
             echo ">> NOMATCH text '${OPENSCAD_NOMATCH_TEXT}' found in output"
             matchtextsuccess=1
@@ -31,14 +33,14 @@ if [ -n "${OPENSCAD_NOMATCH_TEXT}" -o -n "${OPENSCAD_MATCH_TEXT}" ]; then
     fi
 
     if [ -n "${OPENSCAD_MATCH_TEXT}" ]; then
-        grep -q ${OPENSCAD_MATCH_TEXT} testrun_out.txt
+        egrep -q ${OPENSCAD_MATCH_TEXT} ${output_tmpfile}
         if [ $? -ne 0 ]; then
             echo ">> MATCH text '${OPENSCAD_MATCH_TEXT}' not found in output"
             matchtextsuccess=1
         fi
     fi
 else
-    if [ -s testrun_out.txt ]; then
+    if [ -s ${output_tmpfile} ]; then
         matchtextsuccess=1
     fi
 fi
@@ -49,12 +51,12 @@ fi
 if [ ${_es} -ne 0 -o ${matchtextsuccess} -ne 0 ]; then
     echo " FAIL: "
     echo ">> exit status: ${_es}"
-    cat testrun_out.txt
+    cat ${output_tmpfile}
 else 
     echo " OK"
     stat=0
 fi
 
-rm testrun_out.txt
+rm ${output_tmpfile}
 exit ${stat}
 

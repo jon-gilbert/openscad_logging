@@ -2,13 +2,6 @@
 include <logging.scad>
 
 
-// NOTE: we set this here in this test file to silence 
-// warnings about LOG_LEVEL not being defined. 
-// Tests within this file should NOT make calls to log_* 
-// that depend on LOG_LEVEL being defined. 
-LOG_LEVEL = undef;
-
-
 module test_format_log() {
     assert(format_log("abcd", LOG_FATAL)   == "FATAL: abcd"  );
     assert(format_log("abcd", LOG_ERROR)   == "ERROR: abcd"  );

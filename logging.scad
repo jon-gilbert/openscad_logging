@@ -13,25 +13,39 @@
 //
 // Constant: LOG_LEVEL
 // Description:
-//   The global `LOG_LEVEL`: denotes the logging level for a given .scad file.  **You must 
-//   set this constant within your model file somewhere** for logging to take effect. You may only set `LOG_LEVEL` once.
+//   The global `LOG_LEVEL` sets the logging level for a given .scad file.  **You must 
+//   set this constant within your model file somewhere** for logging to take effect.
 //   .
-//   `LOG_LEVEL` may also be set on the command-line with OpenSCAD's `-D` option: `openscad -o out.echo -D"LOG_LEVEL=1" ./file.scad` 
-//   will set `LOG_LEVEL` before your script executes. For this, you'll need the numerical value of the log level you want. 
-// Example(NORENDER):
+//   `LOG_LEVEL` may also be set on the command-line with OpenSCAD's `-D` option to set a 
+//   `LOG_LEVEL` before your script executes. For this, you'll need the numerical value of 
+//   the log level you want. 
+//
+// Example(NORENDER): Incorrectly calling `log_error()` *without* having set `LOG_LEVEL`:
+//   // LOG_LEVEL is not set to anything
+//   log_error("error message");       // nothing is emitted to the console
+//
+// Example(NORENDER): Basic logging usage after setting `LOG_LEVEL`:
 //   LOG_LEVEL = LOG_WARNING;
 //   //
 //   log_debug("debugging message");   // nothing is emitted to the console
 //   log_warning("warning message");   // "ECHO: WARNING: warning message" is emitted to the console. 
-// Example(NORENDER): declaring `LOG_LEVEL` before logging.scad is included:
+//
+// Example(NORENDER): declaring `LOG_LEVEL` before logging.scad is included: placement of where `LOG_LEVEL` is declared may be anywhere:
 //   // in a file that has not yet declared the logging 
 //   // inclusion, the level is set to LOG_WARNING's 
 //   // numerical value:
 //   LOG_LEVEL = 3; 
+//   //
 //   // ...some lines of code later:
+//   //
 //   include <logging.scad>
 //   log_debug("debugging message");   // nothing is emitted to the console
 //   log_warning("warning message");   // "ECHO: WARNING: warning message" is emitted to the console. 
+//
+// Example(NORENDER): command-line declaration:
+//   $ openscad -D"LOG_LEVEL=2" file.scad
+//   // Only log messages with a level of "info" or higher will be emitted.
+//
 // See Also: LOG_FATAL, LOG_ERROR, LOG_WARNING, LOG_INFO, LOG_DEBUG
 
 
@@ -310,7 +324,7 @@ module   log_info(msg, caller=_log_pfc(1)) { logger(msg, LOG_INFO, caller=caller
 //   log_info_if(true, "log message");
 //   // emits to the console:  ECHO: "INFO: log message"
 // Example(NORENDER): when invoked as a module 
-//   LOG_LEVEL = INFO;
+//   LOG_LEVEL = LOG_INFO;
 //   log_info_if(1 > 0, ["message with additional info:", 1]);
 //   // emits to the console:  ECHO: "INFO: message with additional info: 1"
 // Example(NORENDER): when invoked as a module and `test` does not evaluate to true:
@@ -353,7 +367,7 @@ module   log_info_if(test, msg, caller=_log_pfc(1)) { logger_if(test, msg, LOG_I
 //   log_info_unless(false, "log message");
 //   // emits to the console:  ECHO: "INFO: log message"
 // Example(NORENDER): when invoked as a module 
-//   LOG_LEVEL = INFO;
+//   LOG_LEVEL = LOG_INFO;
 //   log_info_unless(1 < 0, ["message with additional info:", 1]);
 //   // emits to the console:  ECHO: "INFO: message with additional info: 1"
 // Example(NORENDER): when invoked as a module and `test` does not evaluate to false
@@ -988,7 +1002,7 @@ function _rec_format_log(msg, s=" ", i=0, acc="") =
 //   echo(log_match(LOG_DEBUG, LOG_ERROR));
 //   // emits:  ECHO: false
 function log_match(level, global_level=undef) = 
-    let(min_level = (global_level) ? global_level : (LOG_LEVEL) ? LOG_LEVEL : LOG_WARNING)
+    let( min_level = (is_num(global_level)) ? global_level : (is_num(LOG_LEVEL)) ? LOG_LEVEL : false )
     is_num(level) && is_num(min_level) && level >= min_level;
 
 
@@ -1012,4 +1026,10 @@ $parent_modules = false;
 ///   side-effect errors when not called in a child hirearchy. 
 function _log_pfc(s=0) = (is_num($parent_modules)) ? ($parent_modules > s) ? parent_module(s) : undef : undef;
 
+/// Constant: LOG_LEVEL
+/// Description:
+///   As defined above in the Constants section; this is a placeholder 
+///   set to `false` and inserted to silence OpenSCAD warnings when 
+///   logging.scad is used without having a valid LOG_LEVEL set.
+LOG_LEVEL = false;
 

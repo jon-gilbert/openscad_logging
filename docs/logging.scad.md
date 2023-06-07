@@ -58,13 +58,22 @@ the "Logging Level Constants" section, below.
 
 **Description:** 
 
-The global `LOG_LEVEL`: denotes the logging level for a given .scad file.  **You must
-set this constant within your model file somewhere** for logging to take effect. You may only set `LOG_LEVEL` once.
+The global `LOG_LEVEL` sets the logging level for a given .scad file.  **You must
+set this constant within your model file somewhere** for logging to take effect.
 
-`LOG_LEVEL` may also be set on the command-line with OpenSCAD's `-D` option: `openscad -o out.echo -D"LOG_LEVEL=1" ./file.scad`
-will set `LOG_LEVEL` before your script executes. For this, you'll need the numerical value of the log level you want.
+`LOG_LEVEL` may also be set on the command-line with OpenSCAD's `-D` option to set a
+`LOG_LEVEL` before your script executes. For this, you'll need the numerical value of
+the log level you want.
 
-**Example 1:** 
+**Example 1:** Incorrectly calling `log_error()` *without* having set `LOG_LEVEL`:
+
+    include <logging.scad>
+    // LOG_LEVEL is not set to anything
+    log_error("error message");       // nothing is emitted to the console
+
+<br clear="all" /><br/>
+
+**Example 2:** Basic logging usage after setting `LOG_LEVEL`:
 
     include <logging.scad>
     LOG_LEVEL = LOG_WARNING;
@@ -74,17 +83,27 @@ will set `LOG_LEVEL` before your script executes. For this, you'll need the nume
 
 <br clear="all" /><br/>
 
-**Example 2:** declaring `LOG_LEVEL` before logging.scad is included:
+**Example 3:** declaring `LOG_LEVEL` before logging.scad is included: placement of where `LOG_LEVEL` is declared may be anywhere:
 
     include <logging.scad>
     // in a file that has not yet declared the logging
     // inclusion, the level is set to LOG_WARNING's
     // numerical value:
     LOG_LEVEL = 3;
+    //
     // ...some lines of code later:
+    //
     include <logging.scad>
     log_debug("debugging message");   // nothing is emitted to the console
     log_warning("warning message");   // "ECHO: WARNING: warning message" is emitted to the console.
+
+<br clear="all" /><br/>
+
+**Example 4:** command-line declaration:
+
+    include <logging.scad>
+    $ openscad -D"LOG_LEVEL=2" file.scad
+    // Only log messages with a level of "info" or higher will be emitted.
 
 <br clear="all" /><br/>
 
@@ -533,7 +552,7 @@ When invoked as a function, `log_info_if()` returns the evaluated value of `test
 **Example 2:** when invoked as a module
 
     include <logging.scad>
-    LOG_LEVEL = INFO;
+    LOG_LEVEL = LOG_INFO;
     log_info_if(1 > 0, ["message with additional info:", 1]);
     // emits to the console:  ECHO: "INFO: message with additional info: 1"
 
@@ -609,7 +628,7 @@ When invoked as a function, `log_info_unless()` returns the evaluated value of `
 **Example 2:** when invoked as a module
 
     include <logging.scad>
-    LOG_LEVEL = INFO;
+    LOG_LEVEL = LOG_INFO;
     log_info_unless(1 < 0, ["message with additional info:", 1]);
     // emits to the console:  ECHO: "INFO: message with additional info: 1"
 
