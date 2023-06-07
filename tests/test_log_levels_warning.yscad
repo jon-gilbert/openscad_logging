@@ -1,5 +1,5 @@
 MATCH_TEXT="warning"
-NOMATCH_TEXT="INFO: "
+NOMATCH_TEXT="(Assertion|INFO:|DEBUG:) "
 
 SCAD=`cat <<EOM
     include <logging.scad>

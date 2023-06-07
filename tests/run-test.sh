@@ -25,7 +25,7 @@ matchtextsuccess=0
 
 if [ -n "${OPENSCAD_NOMATCH_TEXT}" -o -n "${OPENSCAD_MATCH_TEXT}" ]; then
     if [ -n "${OPENSCAD_NOMATCH_TEXT}" ]; then
-        grep -q ${OPENSCAD_NOMATCH_TEXT} ${output_tmpfile}
+        egrep -q ${OPENSCAD_NOMATCH_TEXT} ${output_tmpfile}
         if [ $? -eq 0 ]; then
             echo ">> NOMATCH text '${OPENSCAD_NOMATCH_TEXT}' found in output"
             matchtextsuccess=1
@@ -33,7 +33,7 @@ if [ -n "${OPENSCAD_NOMATCH_TEXT}" -o -n "${OPENSCAD_MATCH_TEXT}" ]; then
     fi
 
     if [ -n "${OPENSCAD_MATCH_TEXT}" ]; then
-        grep -q ${OPENSCAD_MATCH_TEXT} ${output_tmpfile}
+        egrep -q ${OPENSCAD_MATCH_TEXT} ${output_tmpfile}
         if [ $? -ne 0 ]; then
             echo ">> MATCH text '${OPENSCAD_MATCH_TEXT}' not found in output"
             matchtextsuccess=1

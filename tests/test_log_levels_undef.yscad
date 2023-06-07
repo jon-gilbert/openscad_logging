@@ -1,4 +1,4 @@
-NOMATCH_TEXT="ECHO: "
+NOMATCH_TEXT="(Assertion|ECHO:) "
 
 SCAD=`cat <<EOM
     include <logging.scad>
