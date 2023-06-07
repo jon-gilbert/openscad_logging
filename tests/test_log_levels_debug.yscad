@@ -1,4 +1,5 @@
-NOMATCH_TEXT="none"
+MATCH_TEXT="debug"
+NOMATCH_TEXT="Assertion "
 
 SCAD=`cat <<EOM
     include <logging.scad>
