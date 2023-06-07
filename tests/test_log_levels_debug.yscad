@@ -1,0 +1,18 @@
+NOMATCH_TEXT="none"
+
+SCAD=`cat <<EOM
+    include <logging.scad>
+    LOG_LEVEL=LOG_DEBUG;
+    d = log_debug("debug");
+    i = log_info("info");
+    w = log_warning("warning");
+    e = log_error("error");
+    //f = log_fatal("fatal");
+    assert(d == "debug");
+    assert(i == "info");
+    assert(w == "warning");
+    assert(e == "error");
+    //assert(f == "fatal");
+EOM
+`
+
