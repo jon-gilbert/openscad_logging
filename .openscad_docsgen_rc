@@ -1,4 +1,4 @@
-DocsDirectory: docs/
+DocsDirectory: openscad_logging.wiki/
 TargetProfile: githubwiki
 ProjectName: openscad_logging
 IgnoreFiles:
