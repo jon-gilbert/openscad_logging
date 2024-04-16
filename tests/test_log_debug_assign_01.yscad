@@ -3,7 +3,7 @@
 MATCH_TEXT="log-message"
 
 SCAD=`cat <<EOM
-    include <logging.scad>
+    include <openscad_logging/logging.scad>
     LOG_LEVEL=LOG_DEBUG;
     r = log_debug_assign(true, "log-message");
     assert( r == true, "return value from log_debug_assign() is true" );

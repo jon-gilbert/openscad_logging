@@ -3,7 +3,7 @@
 //
 // FileSummary: Routines for simple and consistent logging to the OpenSCAD console.
 // Includes:
-//   include <logging.scad>
+//   include <openscad_logging/logging.scad>
 // Continues:
 //   ...and then, set a `LOG_LEVEL` variable somewhere within your model file. See the `LOG_LEVEL` definition in 
 //   the "Logging Level Constants" section, below.

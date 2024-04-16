@@ -2,7 +2,7 @@
 MATCH_TEXT="log-message"
 
 SCAD=`cat <<EOM
-    include <logging.scad>
+    include <openscad_logging/logging.scad>
     LOG_LEVEL=LOG_DEBUG;
     m = log_debug("log-message");
 EOM

@@ -2,7 +2,7 @@ MATCH_TEXT="warning"
 NOMATCH_TEXT="(Assertion|INFO:|DEBUG:) "
 
 SCAD=`cat <<EOM
-    include <logging.scad>
+    include <openscad_logging/logging.scad>
     LOG_LEVEL=LOG_WARNING;
     d = log_debug("debug");
     i = log_info("info");

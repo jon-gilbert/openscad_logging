@@ -1,5 +1,5 @@
 
-include <logging.scad>
+include <openscad_logging/logging.scad>
 
 
 module test_format_log() {
