@@ -266,7 +266,7 @@ module   log_debug_unless(test, msg, caller=_log_pfc(1)) { logger_unless(test, m
 //   x = log_debug_assign(1, "assigning 1 to x");
 //   // nothing is emitted to the console
 //   // x == 1
-function log_debug_assign(val, msg, caller=_log_pfc()) = logger_assign(val, msg, LOG_DEBUG, caller=caller);
+function log_debug_assign(val, msg=undef, caller=_log_pfc()) = logger_assign(val, msg, LOG_DEBUG, caller=caller);
 
 
 // Function&Module: log_info()
@@ -418,7 +418,7 @@ module   log_info_unless(test, msg, caller=_log_pfc(1)) { logger_unless(test, ms
 //   x = log_info_assign(1, "assigning 1 to x");
 //   // nothing is emitted to the console
 //   // x == 1
-function log_info_assign(val, msg, caller=_log_pfc()) = logger_assign(val, msg, LOG_INFO, caller=caller);
+function log_info_assign(val, msg=undef, caller=_log_pfc()) = logger_assign(val, msg, LOG_INFO, caller=caller);
 
 
 // Function&Module: log_warning()
@@ -570,7 +570,7 @@ module   log_warning_unless(test, msg, caller=_log_pfc(1)) { logger_unless(test,
 //   x = log_warning_assign(1, "assigning 1 to x");
 //   // nothing is emitted to the console
 //   // x == 1
-function log_warning_assign(val, msg, caller=_log_pfc()) = logger_assign(val, msg, LOG_WARNING, caller=caller);
+function log_warning_assign(val, msg=undef, caller=_log_pfc()) = logger_assign(val, msg, LOG_WARNING, caller=caller);
 
 
 // Function&Module: log_error()
@@ -722,7 +722,7 @@ module   log_error_unless(test, msg, caller=_log_pfc(1)) { logger_unless(test, m
 //   x = log_error_assign(1, "assigning 1 to x");
 //   // nothing is emitted to the console
 //   // x == 1
-function log_error_assign(val, msg, caller=_log_pfc()) = logger_assign(val, msg, LOG_ERROR, caller=caller);
+function log_error_assign(val, msg=undef, caller=_log_pfc()) = logger_assign(val, msg, LOG_ERROR, caller=caller);
 
 
 // Function&Module: log_fatal()
@@ -941,7 +941,7 @@ function logger_assign(val, msg, msg_level, caller) =
         _ = logger(
             (is_undef(msg))
                 ? ["assigning value:", val]
-                : (is_list(msg)) ? concat(msg, val) : str(msg, val),
+                : (is_list(msg)) ? concat(msg, ":", val) : str(msg, ": ", val),
             msg_level,
             caller)
     ) val;
