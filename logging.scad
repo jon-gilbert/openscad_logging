@@ -1,6 +1,8 @@
 // LibFile: logging.scad
 //   Logging routines for emitting simple and consistent messages into OpenSCAD's console.
 //
+///  $Format:%d$
+//
 // FileSummary: Routines for simple and consistent logging to the OpenSCAD console.
 // Includes:
 //   include <openscad_logging/logging.scad>
